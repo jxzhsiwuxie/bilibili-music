@@ -1,8 +1,8 @@
-/**
+/*
  * @Author: siwuxie
- * @Date: 2025-04-05 11:22:52
+ * @Date: 2025-04-06 11:44:23
  * @LastEditors: siwuxie
- * @LastEditTime: 2025-04-05 11:54:57
+ * @LastEditTime: 2025-04-06 15:35:51
  * @FilePath: \bilibili-music\src\stores\user.js
  * @Description: 用户状态管理
  *
@@ -12,25 +12,27 @@ import { defineStore } from 'pinia'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    token: localStorage.getItem('music_token') || '',
-    profile: JSON.parse(localStorage.getItem('music_profile') || '{}'),
+    _isLogin: localStorage.getItem('isLogin') || false,
+    _profile: JSON.parse(localStorage.getItem('profile') || '{}'),
   }),
+
   actions: {
-    login(form) {
-      // 模拟登录逻辑
-      this.token = 'mock_token'
-      this.profile = { username: form.username }
-      localStorage.setItem('music_token', this.token)
-      localStorage.setItem('music_profile', JSON.stringify(this.profile))
+    login(userInfo) {
+      const isLogin = userInfo.isLogin
+      const profile = userInfo
+      localStorage.setItem('isLogin', isLogin)
+      localStorage.setItem('profile', JSON.stringify(profile))
     },
     logout() {
-      this.token = ''
-      this.profile = {}
-      localStorage.removeItem('music_token')
-      localStorage.removeItem('music_profile')
+      localStorage.removeItem('isLogin')
+      localStorage.removeItem('profile')
     },
   },
+
   getters: {
-    isLoggedIn: (state) => !!state.token,
+    isLogin: (state) => !!state._isLogin,
+    profile: (state) => state._profile,
+    userName: (state) => state._profile.uname || '',
+    userAvatar: (state) => state._profile.face || '',
   },
 })

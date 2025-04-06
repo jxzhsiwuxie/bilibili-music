@@ -2,7 +2,7 @@
  * @Author: siwuxie
  * @Date: 2025-04-05 10:59:39
  * @LastEditors: siwuxie
- * @LastEditTime: 2025-04-06 01:56:56
+ * @LastEditTime: 2025-04-06 12:18:59
  * @FilePath: \bilibili-music\vite.config.js
  * @Description: Vite 配置文件
  *
@@ -30,22 +30,10 @@ export default defineConfig({
     open: false,
     host: '0.0.0.0',
     proxy: {
-      '/api/bilibili-passport-biligame/': {
-        target: 'http://localhost:18080/bilibili-music/',
+      '/bilibili-music/': {
+        target: 'http://localhost:18080',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
-
-      '/api/bilibili-api/': {
-        target: 'http://localhost:18080/bilibili-music/',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
-
-      '/api/bilibili-passport/': {
-        target: 'http://localhost:18080/bilibili-music/',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        // rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },

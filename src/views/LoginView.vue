@@ -2,7 +2,7 @@
  * @Author: siwuxie
  * @Date: 2025-04-05 11:29:34
  * @LastEditors: siwuxie
- * @LastEditTime: 2025-04-06 01:55:05
+ * @LastEditTime: 2025-04-06 15:36:36
  * @FilePath: \bilibili-music\src\views\LoginView.vue
  * @Description: 登录页面
  *
@@ -55,7 +55,6 @@ import { generateLoginQrCode, checkLoginQrCodeStatus, getLoginInfo } from '@/api
 
 const router = useRouter()
 const userStore = useUserStore()
-// =============================================================================>
 const authStore = useAuthStore()
 const showQrDialog = ref(false)
 const qrUrl = ref('')
@@ -67,42 +66,47 @@ let timer = null
  */
 const handleLogin = async () => {
   try {
-    // const qrData = await generateQrCode()
-    // qrCodeKey.value = qrData.qrcode_key
-    // qrUrl.value = qrData.url
-    // showQrDialog.value = true
-    // startPolling()
-
-    await getLoginUserInfo()
+    const qrData = await generateQrCode()
+    qrCodeKey.value = qrData.qrcode_key
+    qrUrl.value = qrData.url
+    showQrDialog.value = true
+    startPolling()
   } catch (error) {
     console.error('生成二维码失败:', error)
     alert('登录初始化失败，请重试')
   }
 }
+
 /**
  * 获取登录用户信息
  */
 const getLoginUserInfo = async () => {
   const authData = authStore.getAuthData()
   console.log('获取鉴权信息:', authData)
-  const response = await getLoginInfo(authData.SESSDATA)
-  console.log('获取登录信息:', response)
-  if (response.code !== 0) throw new Error(response.message)
+  if (authData?.SESSDATA) {
+    const response = await getLoginInfo()
+    console.log('获取登录信息:', response)
+    if (response.code !== 0) throw new Error(response.message)
 
-  console.log('登录信息:', response.data)
-  return response.data
+    console.log('登录信息:', response.data)
+    return response.data
+  } else {
+    console.error('未获取到登录信息')
+    ElMessage({
+      message: '请先扫码登录',
+      type: 'warning',
+    })
+  }
 }
 
 onMounted(async () => {
-  try {
-    const userInfo = await getLoginUserInfo()
-    console.log('用户信息:', userInfo)
-    if (userInfo.code === 0) {
-      userStore.setUserInfo(userInfo.data)
-      router.push({ name: 'home' })
-    }
-  } catch (error) {
-    console.error('获取用户信息失败:', error)
+  if (userStore.isLogin) {
+    console.log(userStore.isLogin)
+    console.log('用户信息:', userStore.profile)
+    console.log('转到首页')
+    router.push({ name: 'home' })
+  } else {
+    console.log('用户未登录')
   }
 })
 
@@ -206,10 +210,12 @@ const startPolling = () => {
             message: '登录成功',
             type: 'success',
           })
-          // if (form.value.username && form.value.password) {
-          //   userStore.login(form.value)
-          //   router.push({ name: 'home' })
-          // }
+
+          // 获取登录用户信息
+          const userInfo = await getLoginUserInfo()
+          userStore.login(userInfo)
+          // 跳转到首页
+          router.push({ name: 'home' })
         } else if (checkCode === 86090) {
           console.log('二维码已扫码未确认')
         } else if (checkCode === 86101) {

@@ -2,7 +2,7 @@
  * @Author: siwuxie
  * @Date: 2025-04-05 20:13:12
  * @LastEditors: siwuxie
- * @LastEditTime: 2025-04-06 01:50:38
+ * @LastEditTime: 2025-04-06 15:26:57
  * @FilePath: \bilibili-music\src\stores\authStore.js
  * @Description: Bilibili 用户认证状态管理
  *
@@ -10,6 +10,7 @@
  */
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import Cookies from 'js-cookie'
 
 /**
  * 解析登录鉴权信息
@@ -32,7 +33,7 @@ function parseUrl(url) {
 
 export const useAuthStore = defineStore('auth', () => {
   const userInfo = ref(null)
-  const isLoggedIn = ref(false)
+  const isLoginin = ref(false)
 
   // 保存登录信息，直接结构
   function saveAuthData(data) {
@@ -46,6 +47,14 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     localStorage.setItem('bilibili_auth', JSON.stringify(bilibiliAuth))
+    // 设置 Cookies
+    console.log('bilibiliAuth:', bilibiliAuth)
+    console.log('Expires:', bilibiliAuth.Expires)
+    const expiresDays = Number.parseInt(bilibiliAuth.Expires) / (24 * 60 * 60 * 1000)
+    Cookies.set('DedeUserID', bilibiliAuth.DedeUserID, { expires: expiresDays })
+    Cookies.set('DedeUserID__ckMd5', bilibiliAuth.DedeUserID__ckMd5, { expires: expiresDays })
+    Cookies.set('SESSDATA', bilibiliAuth.SESSDATA, { expires: expiresDays })
+    Cookies.set('bili_jct', bilibiliAuth.bili_jct, { expires: expiresDays })
   }
 
   function getAuthData() {
@@ -61,18 +70,8 @@ export const useAuthStore = defineStore('auth', () => {
   function clearAuthData() {
     localStorage.removeItem('bilibili_auth')
     userInfo.value = null
-    isLoggedIn.value = false
+    isLoginin.value = false
   }
 
-  // 初始化时检查本地存储
-  function initialize() {
-    const saved = localStorage.getItem('bilibili_auth')
-    if (saved) {
-      // TODO   // 解析数据
-      // userInfo.value = JSON.parse(saved)
-      // isLoggedIn.value = true
-    }
-  }
-
-  return { userInfo, isLoggedIn, saveAuthData, initialize, getAuthData, clearAuthData }
+  return { userInfo, isLoginin, saveAuthData, getAuthData, clearAuthData }
 })

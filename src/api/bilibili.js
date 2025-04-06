@@ -2,13 +2,14 @@
  * @Author: siwuxie
  * @Date: 2025-04-05 20:17:09
  * @LastEditors: siwuxie
- * @LastEditTime: 2025-04-06 01:46:52
+ * @LastEditTime: 2025-04-06 14:49:19
  * @FilePath: \bilibili-music\src\api\bilibili.js
  * @Description: Bilibili 请求接口
  *
  * Copyright (c) 2025 by siwuxue, All Rights Reserved.
  */
 import request from './request'
+
 // 登录鉴权的前缀
 const BILIBILI_PASSPORT = '/bilibili-passport'
 // 换取信息的前缀
@@ -62,14 +63,11 @@ export const checkLoginQrCodeStatus = (qrKey) =>
 
 /**
  * 获取登录用户信息
- * @param {String} sessionData 上一步登录成功后返回的 SESSDATA
  * @returns {Promise} Promise
  */
-export const getLoginInfo = (sessionData) =>
-  request({
+export const getLoginInfo = () => {
+  return request({
     url: `${BILIBILI_API}/x/web-interface/nav`,
     method: 'get',
-    params: {
-      SESSDATA: sessionData,
-    },
   })
+}

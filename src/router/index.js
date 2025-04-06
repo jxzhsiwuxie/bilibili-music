@@ -1,3 +1,13 @@
+/*
+ * @Author: siwuxie
+ * @Date: 2025-04-06 11:44:23
+ * @LastEditors: siwuxie
+ * @LastEditTime: 2025-04-06 15:37:55
+ * @FilePath: \bilibili-music\src\router\index.js
+ * @Description: 路由配置
+ *
+ * Copyright (c) 2025 by siwuxue, All Rights Reserved.
+ */
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 
@@ -58,18 +68,17 @@ router.beforeEach((to) => {
   const publicPages = ['/login']
 
   // 非公开页面且未登录时跳转登录
-  if (!publicPages.includes(to.path) && !store.isLoggedIn) {
+  if (!publicPages.includes(to.path) && !store.isLogin) {
     return {
       name: 'login',
       query: { redirect: to.fullPath }, // 保留跳转路径
     }
   }
 
-  // // TODO 恢复
-  // // 已登录时禁止访问登录页
-  // if (to.path === '/login' && store.isLoggedIn) {
-  //   return { path: '/' }
-  // }
+  // 已登录时禁止访问登录页
+  if (to.path === '/login' && store.isLogin) {
+    return { path: '/' }
+  }
 })
 
 export default router
