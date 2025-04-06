@@ -2,7 +2,7 @@
  * @Author: siwuxie
  * @Date: 2025-04-05 11:22:52
  * @LastEditors: siwuxie
- * @LastEditTime: 2025-04-06 16:45:20
+ * @LastEditTime: 2025-04-06 22:08:20
  * @FilePath: \bilibili-music\src\layouts\MainLayout.vue
  * @Description: 主布局
  *
@@ -140,20 +140,26 @@ onMounted(() => {
   userName.value = userStore.userName
 
   // 获取用户头像
-  getAvatarBase64(new URL(userStore.userAvatar).pathname)
-    .then((res) => {
-      console.log('获取头像成功', res)
-      const uint8Array = new Uint8Array(res)
-      // 将Uint8Array转换为Base64字符串
-      const base64String = btoa(
-        uint8Array.reduce((data, byte) => data + String.fromCharCode(byte), ''),
-      )
-      // 设置图片的Base64源
-      circleUrl.value = `data:image/*;base64,${base64String}`
-    })
-    .catch((error) => {
-      console.error('获取头像失败', error)
-    })
+  if (userStore.avatarBase64) {
+    circleUrl.value = userStore.avatarBase64
+  } else {
+    getAvatarBase64(new URL(userStore.userAvatar).pathname)
+      .then((res) => {
+        console.log('获取头像成功', res)
+        const uint8Array = new Uint8Array(res)
+        // 将Uint8Array转换为Base64字符串
+        const base64String = btoa(
+          uint8Array.reduce((data, byte) => data + String.fromCharCode(byte), ''),
+        )
+        // 设置图片的Base64源
+        const base64Url = `data:image/png;base64,${base64String}`
+        circleUrl.value = base64Url
+        userStore.setAvatarBase64(base64Url)
+      })
+      .catch((error) => {
+        console.error('获取头像失败', error)
+      })
+  }
 })
 
 const toggleCollapse = () => {

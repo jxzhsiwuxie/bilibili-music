@@ -2,7 +2,7 @@
  * @Author: siwuxie
  * @Date: 2025-04-05 10:59:39
  * @LastEditors: siwuxie
- * @LastEditTime: 2025-04-05 13:02:37
+ * @LastEditTime: 2025-04-06 21:02:20
  * @FilePath: \bilibili-music\src\views\HomeView.vue
  * @Description: 首页
  *
@@ -53,6 +53,7 @@
 import { ref, shallowRef } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import MusicList from '@/components/MusicList.vue'
+import { searchByType } from '@/api/bilibili'
 
 // 选项卡组件
 // const RecommendTab = { template: '<div>推荐歌单内容</div>' }
@@ -69,8 +70,15 @@ const hotSongs = ref([]) // 热门歌曲数据
 //   currentTabComponent.value = tab === 'recommend' ? RecommendTab : HotTab
 // }
 
-const handleSearch = () => {
+const handleSearch = async () => {
   console.log('执行搜索:', searchKey.value)
+  const res = await searchByType(searchKey.value, 'video')
+  if (res.code === 0) {
+    console.log('搜索结果:', res.data)
+    // 处理搜索结果
+  } else {
+    console.error('搜索失败:', res.message)
+  }
 }
 </script>
 

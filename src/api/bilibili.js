@@ -2,13 +2,16 @@
  * @Author: siwuxie
  * @Date: 2025-04-05 20:17:09
  * @LastEditors: siwuxie
- * @LastEditTime: 2025-04-06 16:41:56
+ * @LastEditTime: 2025-04-06 22:13:12
  * @FilePath: \bilibili-music\src\api\bilibili.js
  * @Description: Bilibili 请求接口
  *
  * Copyright (c) 2025 by siwuxue, All Rights Reserved.
  */
 import request from './request'
+import WbiSign from '@/utils/wbi-sign'
+import { useUserStore } from '@/stores/user'
+const userStore = useUserStore()
 
 // 登录鉴权的前缀
 const BILIBILI_PASSPORT = '/bilibili-passport'
@@ -84,5 +87,30 @@ export const getAvatarBase64 = (avatarPath) => {
     url: `${BILIBILI_BFS}${avatarPath}`,
     method: 'get',
     responseType: 'arraybuffer',
+  })
+}
+
+/**
+ * 分类搜索
+ * @param {String} keyword 关键词
+ * @param {String} type 分类
+ * @param {Number} page 页码，默认1
+ * @returns Promise
+ */
+export const searchByType = async (keyword, type, page = 1) => {
+  const params = {
+    keyword,
+    search_type: type,
+    order: 'totalrank', // 结果排序方式 综合排序
+    duration: 0, // 视频时长筛选 全部
+    tids: 0, // 视频分区筛选 全部分区
+    page: page,
+  }
+  const navRes = userStore.profile
+  const signedParams = await WbiSign(navRes, params)
+  console.log('signedParams>>>>>>>>>>>>>>>>>>>>', signedParams)
+  return request({
+    url: `${BILIBILI_API}/x/web-interface/wbi/search/type?${signedParams}`,
+    method: 'get',
   })
 }
