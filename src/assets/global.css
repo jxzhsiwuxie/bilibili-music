@@ -1,0 +1,79 @@
+/**
+ * @Author: siwuxie
+ * @Date: 2025-04-05 10:59:39
+ * @LastEditors: siwuxie
+ * @LastEditTime: 2025-04-05 11:39:41
+ * @FilePath: \bilibili-music\src\assets\global.css
+ * @Description: 全局样式
+ *
+ * Copyright (c) 2025 by siwuxue, All Rights Reserved.
+*/
+
+:root {
+  /* 浅色主题 */
+  --primary-bg: #ffffff;
+  --secondary-bg: #f5f7fa;
+  --primary-text: #2c3e50;
+  --primary-color: #00a1d6; /* B站主题蓝 */
+  --accent-color: #87d068; /* 辅助绿色 */
+
+  /* 暗色主题 */
+  --dark-bg: #1a1a1a;
+  --dark-secondary: #2d2d2d;
+  --dark-text: #e5e5e5;
+}
+
+/* 基础响应式设置 */
+html {
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+
+  .nav-toggle {
+    display: block;
+  }
+}
+
+/* 主题切换逻辑 */
+body {
+  --current-bg: var(--primary-bg);
+  --current-text: var(--primary-text);
+  --current-secondary: var(--secondary-bg);
+
+  background-color: var(--current-bg);
+  color: var(--current-text);
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+}
+
+body.dark-mode {
+  --current-bg: var(--dark-bg);
+  --current-text: var(--dark-text);
+  --current-secondary: var(--dark-secondary);
+}
+
+/* 增强布局系统 */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* 响应式导航栏基础 */
+.nav-toggle {
+  display: none;
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+}
+
+.el-button--primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
