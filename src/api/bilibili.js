@@ -2,7 +2,7 @@
  * @Author: siwuxie
  * @Date: 2025-04-05 20:17:09
  * @LastEditors: siwuxie
- * @LastEditTime: 2025-04-06 14:49:19
+ * @LastEditTime: 2025-04-06 16:41:56
  * @FilePath: \bilibili-music\src\api\bilibili.js
  * @Description: Bilibili 请求接口
  *
@@ -14,6 +14,8 @@ import request from './request'
 const BILIBILI_PASSPORT = '/bilibili-passport'
 // 换取信息的前缀
 const BILIBILI_API = '/bilibili-api'
+// 图片资源的前缀
+const BILIBILI_BFS = '/bilibili-bfs'
 
 /**
  * 获取登录二维码
@@ -69,5 +71,18 @@ export const getLoginInfo = () => {
   return request({
     url: `${BILIBILI_API}/x/web-interface/nav`,
     method: 'get',
+  })
+}
+
+/**
+ * 获取登录用户的头像
+ * @param {String} avatarPath 头像路径
+ * @returns
+ */
+export const getAvatarBase64 = (avatarPath) => {
+  return request({
+    url: `${BILIBILI_BFS}${avatarPath}`,
+    method: 'get',
+    responseType: 'arraybuffer',
   })
 }

@@ -2,7 +2,7 @@
  * @Author: siwuxie
  * @Date: 2025-04-05 11:22:52
  * @LastEditors: siwuxie
- * @LastEditTime: 2025-04-05 19:50:18
+ * @LastEditTime: 2025-04-06 16:45:20
  * @FilePath: \bilibili-music\src\layouts\MainLayout.vue
  * @Description: 主布局
  *
@@ -67,7 +67,8 @@
           </el-icon>
           <!-- 用户信息 -->
           <div class="user-info">
-            <el-avatar :size="30" :src="circleUrl" :title="userStore.profile.username" />
+            <img class="user-avatar" :src="circleUrl" :alt="userName" />
+            <span class="user-name">{{ userName }}</span>
           </div>
         </el-header>
         <!-- 主内容区域 -->
@@ -97,6 +98,7 @@ import MusicPlayer from '@/components/MusicPlayer.vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useLayoutStore } from '@/stores/layout'
+import { getAvatarBase64 } from '@/api/bilibili'
 
 // 主题切换
 const isDark = ref(localStorage.getItem('theme') === 'dark')
@@ -110,10 +112,12 @@ watchEffect(() => {
 })
 
 // 用户信息
-const circleUrl = ref('https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png')
-
-const router = useRouter()
+const circleUrl = ref('')
+const userName = ref('')
 const userStore = useUserStore()
+
+// 退出登录
+const router = useRouter()
 const handleLogout = () => {
   userStore.logout()
   router.push({ name: 'login' })
@@ -133,6 +137,23 @@ const isCollapsed = ref(false)
 
 onMounted(() => {
   isCollapsed.value = isMobile.value
+  userName.value = userStore.userName
+
+  // 获取用户头像
+  getAvatarBase64(new URL(userStore.userAvatar).pathname)
+    .then((res) => {
+      console.log('获取头像成功', res)
+      const uint8Array = new Uint8Array(res)
+      // 将Uint8Array转换为Base64字符串
+      const base64String = btoa(
+        uint8Array.reduce((data, byte) => data + String.fromCharCode(byte), ''),
+      )
+      // 设置图片的Base64源
+      circleUrl.value = `data:image/*;base64,${base64String}`
+    })
+    .catch((error) => {
+      console.error('获取头像失败', error)
+    })
 })
 
 const toggleCollapse = () => {
@@ -248,6 +269,30 @@ $sidebar-width: 160px;
       align-items: center;
       justify-content: space-between;
       padding: 0 20px;
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+
+        .user-avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          object-fit: cover;
+          transition: all 0.3s ease;
+        }
+
+        .user-name {
+          margin-left: 10px;
+          font-size: 16px;
+          color: #333;
+          width: 10em;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+        }
+      }
     }
   }
 }
